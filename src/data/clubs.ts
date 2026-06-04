@@ -15,7 +15,6 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1563968743333-044cef800494?w=200&h=200&fit=crop",
-    tags: ["Engineering", "STEM", "Competition", "Hands-on"],
     meetingTime: "Thursdays, 6:00 PM - 8:00 PM",
     location: "Science & Technology Center, Room 204",
     email: "robotics@tufts.edu",
@@ -38,11 +37,6 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=200&h=200&fit=crop",
-    tags: [
-      "Academic",
-      "Public Speaking",
-      "Competition",
-    ],
     meetingTime:
       "Tuesdays & Fridays, 7:30 PM - 9:00 PM",
     location:
@@ -67,7 +61,6 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=200&h=200&fit=crop",
-    tags: ["Arts", "Creative"],
     meetingTime:
       "Wednesdays, 5:00 PM - 7:00 PM",
     location: "Campus Center",
@@ -91,7 +84,6 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=200&fit=crop",
-    tags: ["Data", "AI", "Programming"],
     meetingTime:
       "Mondays, 7:00 PM - 8:30 PM",
     location: "Halligan Hall",
@@ -115,7 +107,6 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=200&h=200&fit=crop",
-    tags: ["Business", "Startups"],
     meetingTime:
       "Fridays, 6:00 PM - 8:00 PM",
     location: "Joyce Cummings Center",
@@ -139,7 +130,6 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1551632811-561732d1e306?w=200&h=200&fit=crop",
-    tags: ["Outdoors", "Adventure"],
     meetingTime:
       "Weekends",
     location: "Campus Center",

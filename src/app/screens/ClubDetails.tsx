@@ -137,14 +137,14 @@ export function ClubDetails({
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-6">
-                    {club.tags.map(
-                        (tag: string) => (
+                    {club.categories.map(
+                        (category: string) => (
                             <span
-                                key={tag}
+                                key={category}
                                 className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm flex items-center gap-1"
                             >
                                 <Tag className="w-3 h-3" />
-                                {tag}
+                                {category}
                             </span>
                         )
                     )}
