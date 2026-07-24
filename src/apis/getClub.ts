@@ -21,7 +21,7 @@ export async function getClub(clubId: string) {
 
     if (error) {
         console.error(error);
-        return [];
+        return;
     }
 
     const club: ClubDetailsResponseClub = {
