@@ -1,10 +1,10 @@
-import type { Club } from "@/types/club";
+import type { ClubType } from "@/types/club";
 
-export const allClubs = [
+export const allClubs: ClubType[] = [
   {
     id: "1",
     name: "Tufts Robotics Club",
-    categories: ["Engineering", "Academic"],
+    categories: ["c4", "c1"], // Engineering, Academic
     members: 45,
     description: "Build and compete with robots",
     mission:
@@ -25,10 +25,9 @@ export const allClubs = [
   {
     id: "2",
     name: "Debate Society",
-    categories: ["Academic"],
+    categories: ["c1"], // Academic
     members: 62,
-    description:
-      "Competitive debate and public speaking.",
+    description: "Competitive debate and public speaking.",
     mission:
       "Develop strong communicators and critical thinkers.",
     image:
@@ -37,10 +36,8 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=200&h=200&fit=crop",
-    meetingTime:
-      "Tuesdays & Fridays, 7:30 PM - 9:00 PM",
-    location:
-      "Barnum Hall, Conference Room",
+    meetingTime: "Tuesdays & Fridays, 7:30 PM - 9:00 PM",
+    location: "Barnum Hall, Conference Room",
     email: "debate@tufts.edu",
     instagram: "@tuftsdebate",
     createdAt: new Date("2024-02-15"),
@@ -49,10 +46,9 @@ export const allClubs = [
   {
     id: "3",
     name: "Photography Club",
-    categories: ["Arts"],
+    categories: ["c2"], // Arts
     members: 38,
-    description:
-      "Capture campus life and learn photography.",
+    description: "Capture campus life and learn photography.",
     mission:
       "Help students explore photography creatively.",
     image:
@@ -61,8 +57,7 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=200&h=200&fit=crop",
-    meetingTime:
-      "Wednesdays, 5:00 PM - 7:00 PM",
+    meetingTime: "Wednesdays, 5:00 PM - 7:00 PM",
     location: "Campus Center",
     email: "photo@tufts.edu",
     instagram: "@tuftsphoto",
@@ -72,10 +67,9 @@ export const allClubs = [
   {
     id: "4",
     name: "Data Science Club",
-    categories: ["Academic"],
+    categories: ["c1"], // Academic
     members: 51,
-    description:
-      "Explore data analysis and machine learning.",
+    description: "Explore data analysis and machine learning.",
     mission:
       "Teach practical data science skills.",
     image:
@@ -84,8 +78,7 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=200&fit=crop",
-    meetingTime:
-      "Mondays, 7:00 PM - 8:30 PM",
+    meetingTime: "Mondays, 7:00 PM - 8:30 PM",
     location: "Halligan Hall",
     email: "datascience@tufts.edu",
     instagram: "@tuftsdatascience",
@@ -95,10 +88,9 @@ export const allClubs = [
   {
     id: "5",
     name: "Entrepreneurship Society",
-    categories: ["Professional"],
+    categories: ["c5"], // Professional
     members: 73,
-    description:
-      "Build startups and business skills.",
+    description: "Build startups and business skills.",
     mission:
       "Support student founders.",
     image:
@@ -107,8 +99,7 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=200&h=200&fit=crop",
-    meetingTime:
-      "Fridays, 6:00 PM - 8:00 PM",
+    meetingTime: "Fridays, 6:00 PM - 8:00 PM",
     location: "Joyce Cummings Center",
     email: "entrepreneurship@tufts.edu",
     instagram: "@tuftsstartup",
@@ -118,10 +109,9 @@ export const allClubs = [
   {
     id: "6",
     name: "Outdoor Adventure Club",
-    categories: ["Recreation"],
+    categories: ["c6"], // Recreation
     members: 89,
-    description:
-      "Hiking, camping, and outdoor trips.",
+    description: "Hiking, camping, and outdoor trips.",
     mission:
       "Connect students with outdoor experiences.",
     image:
@@ -130,8 +120,7 @@ export const allClubs = [
       "https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=400&fit=crop",
     logo:
       "https://images.unsplash.com/photo-1551632811-561732d1e306?w=200&h=200&fit=crop",
-    meetingTime:
-      "Weekends",
+    meetingTime: "Weekends",
     location: "Campus Center",
     email: "outdoors@tufts.edu",
     instagram: "@tuftsoutdoors",

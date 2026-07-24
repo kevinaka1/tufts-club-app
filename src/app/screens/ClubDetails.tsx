@@ -14,49 +14,75 @@ import {
     Tag,
 } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
-import { allClubs } from "@/data/clubs";
-import { allEvents, type Event } from "@/data/events";
+import { CategoryType } from "@/types/category";
+import { getSimilarClubs } from "@/apis/getSimilarClubs";
+import { getClub } from "@/apis/getClub";
+import { getClubEvents } from "@/apis/getClubEvents";
+import { ClubDetailsEvent, ClubDetailsResponseClub, ClubDetailsSimilarClub } from "@/types/apiResponses";
 
 
 export function ClubDetails({
-    clubId,
+    userId,
+    club,
+    alreadyJoinedClub,
+    upcomingEvents,
+    similarClubs
 }: {
-    clubId: string;
+    userId: string,
+    club: ClubDetailsResponseClub | undefined,
+    alreadyJoinedClub: boolean
+    upcomingEvents: ClubDetailsEvent[] | undefined,
+    similarClubs: ClubDetailsSimilarClub[] | undefined
 }) {
 
 
     const router = useRouter();
     const [alreadyJoined, setAlreadyJoined] =
-        useState(false);
+        useState(alreadyJoinedClub);
 
-    const club = allClubs.find(
-        (club) => club.id === clubId
-    ) || allClubs["1"];
+    if (!club) {
+        return <div>Club not found</div>;
+    }
 
-    const similarClubs = allClubs.filter(
-        (currClub) =>
-            currClub.id !== club.id &&
-            currClub.categories.some((category) =>
-                club.categories.includes(category)
-            )
-    );
+    const handleClubJoining = async () => {
+        const joinedClub = alreadyJoined
+        setAlreadyJoined(!alreadyJoined)
+        try {
+            let response;
+            if (joinedClub) {
+                response = await fetch("/api/userFollowedClubs", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        clubId: club.id,
+                    }),
+                });
+            } else {
+                response = await fetch("/api/userFollowedClubs", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        clubId: club.id,
+                    }),
+                });
+            }
 
-    const upcomingEvents = allEvents
-        .filter(
-            (event: Event) =>
-                event.clubId ===
-                clubId &&
-                event.startDate >
-                new Date()
-        )
-        .sort(
-            (
-                a: Event,
-                b: Event
-            ) =>
-                a.startDate.getTime() -
-                b.startDate.getTime()
-        );
+            if (!response.ok) {
+                throw new Error("Request failed");
+            }
+        } catch (err) {
+            console.error(err);
+
+            setAlreadyJoined(!alreadyJoined)
+        }
+
+    }
 
 
 
@@ -79,9 +105,7 @@ export function ClubDetails({
                 </button>
 
                 <button
-                    onClick={() =>
-                        setAlreadyJoined(!alreadyJoined)
-                    }
+                    onClick={handleClubJoining}
                     className={`absolute top-4 right-4 w-10 h-10 backdrop-blur-sm rounded-full flex items-center justify-center ${alreadyJoined
                         ? "bg-primary text-primary-foreground"
                         : "bg-black/50 text-white"
@@ -120,11 +144,7 @@ export function ClubDetails({
                     </div>
 
                     <button
-                        onClick={() =>
-                            setAlreadyJoined(
-                                !alreadyJoined
-                            )
-                        }
+                        onClick={handleClubJoining}
                         className={`px-6 py-2 rounded-full ${alreadyJoined
                             ? "bg-muted text-foreground"
                             : "bg-primary text-primary-foreground"
@@ -138,15 +158,18 @@ export function ClubDetails({
 
                 <div className="flex flex-wrap gap-2 mb-6">
                     {club.categories.map(
-                        (category: string) => (
-                            <span
-                                key={category}
-                                className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm flex items-center gap-1"
-                            >
-                                <Tag className="w-3 h-3" />
-                                {category}
-                            </span>
-                        )
+                        (category) => {
+                            const categoryName = category.name
+                            return (
+                                <span
+                                    key={category.id}
+                                    className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm flex items-center gap-1"
+                                >
+                                    <Tag className="w-3 h-3" />
+                                    {categoryName}
+                                </span>
+                            )
+                        }
                     )}
                 </div>
 
@@ -206,11 +229,11 @@ export function ClubDetails({
                     </h3>
 
                     <div className="space-y-3">
-                        {upcomingEvents.length >
+                        {upcomingEvents && upcomingEvents.length >
                             0 ? (
                             upcomingEvents.map(
                                 (
-                                    event: Event
+                                    event
                                 ) => (
                                     <div
                                         key={
@@ -328,37 +351,44 @@ export function ClubDetails({
                     <h3 className="mb-3">
                         Similar Clubs
                     </h3>
+                    {similarClubs && similarClubs.length > 0 ? (
+                        <div className="space-y-3">
+                            {similarClubs?.map(
+                                (similarClub) => {
+                                    const similarClubCategoryNames = similarClub.categories.map((similarClubCategory: CategoryType) =>
+                                        similarClubCategory.name
+                                    ).join(
+                                        ", "
+                                    )
+                                    return (
+                                        <Link
+                                            key={similarClub.id}
+                                            href={`/clubs/${similarClub.id}`}
+                                            className="flex items-center justify-between py-3 px-4 bg-card border border-border rounded-lg"
+                                        >
+                                            <div>
+                                                <h4>
+                                                    {similarClub.name}
+                                                </h4>
 
-                    <div className="space-y-3">
-                        {similarClubs.map(
-                            (similar: any) => (
-                                <Link
-                                    key={similar.id}
-                                    href={`/clubs/${similar.id}`}
-                                    className="flex items-center justify-between py-3 px-4 bg-card border border-border rounded-lg"
-                                >
-                                    <div>
-                                        <h4>
-                                            {similar.name}
-                                        </h4>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {similarClubCategoryNames}
+                                                </p>
+                                            </div>
 
-                                        <p className="text-sm text-muted-foreground">
-                                            {similar.categories.join(
-                                                ", "
-                                            )}
-                                        </p>
-                                    </div>
-
-                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                        <Users className="w-3 h-3" />
-                                        {
-                                            similar.members
-                                        }
-                                    </span>
-                                </Link>
-                            )
-                        )}
-                    </div>
+                                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                                <Users className="w-3 h-3" />
+                                                {
+                                                    similarClub.members
+                                                }
+                                            </span>
+                                        </Link>
+                                    )
+                                }
+                            )}
+                        </div>
+                    ) : (<p className="text-sm text-muted-foreground mb-4">
+                        There are no clubs like this one. It's one of a kind!</p>)}
                 </section>
             </div>
         </div>

@@ -9,56 +9,30 @@ import {
     X
 } from "lucide-react";
 
-import { allEvents, type Event } from "@/data/events";
-import { allClubs } from "@/data/clubs";
+
 import { useSearchParams, useRouter } from "next/navigation";
-import { mockUsers } from "@/data/userProfiles";
+import { CampusEvent, CampusEventSections, ClubEventSections } from "@/types/apiResponses";
+import { ClubEvent } from "@/types/apiResponses";
 
-export default function EventsPage() {
-    const currentUser = mockUsers[0];
-    const userRSVPdEvents = currentUser.rsvpdEvents
-    const currentDate: Date = new Date();
+export default function EventsPage({
+    userId,
+    initialRSVPdEventIds,
+    clubEvents,
+    campusEvents
+}: {
+    userId: string,
+    initialRSVPdEventIds: string[] | undefined,
+    clubEvents: ClubEventSections,
+    campusEvents: CampusEventSections
+}) {
 
-    function isToday(date: Date) {
-        const today =
-            currentDate;
-
-        return (
-            date.getDate() ===
-            today.getDate() &&
-            date.getMonth() ===
-            today.getMonth() &&
-            date.getFullYear() ===
-            today.getFullYear()
-        );
-    }
-
-    function isThisWeek(
-        date: Date
-    ) {
-        const today =
-            currentDate;
-
-        const weekFromNow =
-            currentDate;
-
-        weekFromNow.setDate(
-            today.getDate() +
-            7
-        );
-
-        return (
-            date > today &&
-            date <=
-            weekFromNow &&
-            !isToday(date)
-        );
-    }
     const searchParams =
         useSearchParams();
 
     const router =
         useRouter();
+
+    const initialRsvped = initialRSVPdEventIds;
 
     const initialTab =
         searchParams.get(
@@ -70,42 +44,94 @@ export default function EventsPage() {
         useState<
             "club" | "campus"
         >(initialTab);
-    const [rsvpedEvents, setRsvpedEvents] = useState<Set<string>>(new Set(userRSVPdEvents));
+
+    const [rsvpedEvents, setRsvpedEvents] = useState<Set<string>>(new Set(initialRsvped));
     const [showRsvpModal, setShowRsvpModal] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
     const [rsvpFilter, setRsvpFilter] = useState<"all" | "rsvped" | "not-rsvped">("all");
     const [hideExpiredRsvp, setHideExpiredRsvp] = useState(false);
 
+    const isRsvped = (eventId: string) => rsvpedEvents.has(eventId);
+    const currentDate = new Date();
 
-    const isRsvpExpired = (event: Event) => {
-        if (!event.rsvpDeadline) return false;
-        return currentDate > event.rsvpDeadline;
+    function isExpired(deadline?: Date) {
+        if (!deadline) return false;
+        return currentDate > deadline;
+    }
+
+
+
+    const filteredCampusSection =
+    {
+        todayEvents: campusEvents?.todayEvents.filter(event => {
+            if (
+                rsvpFilter === "rsvped" &&
+                !isRsvped(event.id)
+            )
+                return false;
+
+            if (
+                rsvpFilter === "not-rsvped" &&
+                isRsvped(event.id)
+            )
+                return false;
+
+            if (
+                hideExpiredRsvp &&
+                isExpired(event.rsvpDeadline)
+            )
+                return false;
+
+            return true;
+        }),
+
+        thisWeekEvents: campusEvents?.thisWeekEvents.filter(event => {
+            if (
+                rsvpFilter === "rsvped" &&
+                !isRsvped(event.id)
+            )
+                return false;
+
+            if (
+                rsvpFilter === "not-rsvped" &&
+                isRsvped(event.id)
+            )
+                return false;
+
+            if (
+                hideExpiredRsvp &&
+                isExpired(event.rsvpDeadline)
+            )
+                return false;
+
+            return true;
+
+
+        }),
+
+        laterEvents: campusEvents?.laterEvents.filter(event => {
+            if (
+                rsvpFilter === "rsvped" &&
+                !isRsvped(event.id)
+            )
+                return false;
+
+            if (
+                rsvpFilter === "not-rsvped" &&
+                isRsvped(event.id)
+            )
+                return false;
+
+            if (
+                hideExpiredRsvp &&
+                isExpired(event.rsvpDeadline)
+            )
+                return false;
+
+            return true;
+        }),
     };
 
-    let filteredEvents = allEvents.filter((event) => {
-        if (activeTab === "campus") {
-            return event.type === "campus";
-        }
-
-        return (
-            event.type === "club" &&
-            event.clubId &&
-            currentUser.followedClubs.includes(event.clubId)
-        );
-    });
-
-    // Filter campus events by RSVP status
-    if (activeTab === "campus" && rsvpFilter !== "all") {
-        filteredEvents = filteredEvents.filter((event) => {
-            const isEventRsvped = rsvpedEvents.has(event.id);
-            return rsvpFilter === "rsvped" ? isEventRsvped : !isEventRsvped;
-        });
-    }
-
-    // Filter out expired RSVP events if hideExpiredRsvp is true
-    if (activeTab === "campus" && hideExpiredRsvp) {
-        filteredEvents = filteredEvents.filter((event) => !isRsvpExpired(event));
-    }
 
 
 
@@ -115,18 +141,68 @@ export default function EventsPage() {
         setShowRsvpModal(true);
     };
 
-    const confirmRsvp = () => {
-        if (selectedEventId) {
-            setRsvpedEvents((prev) => {
+    const confirmRsvp = async () => {
+        if (!selectedEventId) return;
+
+        const wasRsvped = rsvpedEvents.has(selectedEventId);
+
+        setRsvpedEvents(prev => {
+            const next = new Set(prev);
+
+            if (wasRsvped) {
+                next.delete(selectedEventId);
+            } else {
+                next.add(selectedEventId);
+            }
+
+            return next;
+        });
+
+        try {
+            let response;
+            if (wasRsvped) {
+                response = await fetch("/api/rsvp", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        eventId: selectedEventId,
+                    }),
+                });
+            } else {
+                response = await fetch("/api/rsvp", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        userId,
+                        eventId: selectedEventId,
+                    }),
+                });
+            }
+
+            if (!response.ok) {
+                throw new Error("Request failed");
+            }
+        } catch (err) {
+            console.error(err);
+
+            setRsvpedEvents(prev => {
                 const next = new Set(prev);
-                if (next.has(selectedEventId)) {
-                    next.delete(selectedEventId);
-                } else {
+
+                if (wasRsvped) {
                     next.add(selectedEventId);
+                } else {
+                    next.delete(selectedEventId);
                 }
+
                 return next;
             });
         }
+
         setShowRsvpModal(false);
         setSelectedEventId(null);
     };
@@ -136,7 +212,7 @@ export default function EventsPage() {
         setSelectedEventId(null);
     };
 
-    const isRsvped = (eventId: string) => rsvpedEvents.has(eventId);
+
 
     const handleTabChange = (
         tab: "club" | "campus"
@@ -148,43 +224,9 @@ export default function EventsPage() {
         );
     };
 
-
-    const sortedEvents = [...filteredEvents].sort(
-        (a, b) =>
-            a.startDate.getTime() -
-            b.startDate.getTime()
-    );
-
-    const todayEvents =
-        sortedEvents.filter(
-            (event) =>
-                isToday(
-                    event.startDate
-                )
-        );
-
-    const thisWeekEvents =
-        sortedEvents.filter(
-            (event) =>
-                isThisWeek(
-                    event.startDate
-                )
-        );
-
-    const laterEvents =
-        sortedEvents.filter(
-            (event) =>
-                !isToday(
-                    event.startDate
-                ) &&
-                !isThisWeek(
-                    event.startDate
-                )
-        );
-
-    const renderSection = (
+    const renderClubSection = (
         title: string,
-        events: typeof sortedEvents
+        events: ClubEvent[]
     ) => {
         if (
             events.length ===
@@ -204,19 +246,156 @@ export default function EventsPage() {
                         (
                             event
                         ) => {
-                            const club =
-                                event.clubId
-                                    ? allClubs.find(
-                                        (
-                                            c
-                                        ) =>
-                                            c.id ===
-                                            event.clubId
-                                    )
-                                    : null;
+
+
+
+                            return (
+                                <div
+                                    key={
+                                        event.id
+                                    }
+                                    className="bg-card border border-border rounded-2xl overflow-hidden"
+                                >
+                                    <div className="h-40 overflow-hidden">
+                                        <img
+                                            src={
+                                                event.image
+                                            }
+                                            alt={
+                                                event.name
+                                            }
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+
+                                    <div className="p-4">
+                                        <h3 className="mb-2">
+                                            {
+                                                event.name
+                                            }
+                                        </h3>
+
+                                        {event.club?.name && event.club.id && (
+                                            <Link
+                                                href={`/clubs/${event.club.id}`}
+                                                className="text-sm text-primary mb-2 inline-block"
+                                            >
+                                                {
+                                                    event.club.name
+                                                }
+                                            </Link>
+                                        )}
+
+
+
+                                        <p className="text-sm text-muted-foreground mb-4">
+                                            {
+                                                event.description
+                                            }
+                                        </p>
+
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <Calendar className="w-4 h-4 text-primary" />
+
+                                                <span>
+                                                    {event.startDate.toLocaleDateString(
+                                                        "en-US",
+                                                        {
+                                                            weekday:
+                                                                "short",
+                                                            month:
+                                                                "short",
+                                                            day:
+                                                                "numeric",
+                                                        }
+                                                    )}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <Clock className="w-4 h-4 text-primary" />
+
+                                                <span>
+                                                    {event.startDate.toLocaleTimeString(
+                                                        "en-US",
+                                                        {
+                                                            hour:
+                                                                "numeric",
+                                                            minute:
+                                                                "2-digit",
+                                                        }
+                                                    )}{" "}
+                                                    -{" "}
+                                                    {event.endDate.toLocaleTimeString(
+                                                        "en-US",
+                                                        {
+                                                            hour:
+                                                                "numeric",
+                                                            minute:
+                                                                "2-digit",
+                                                        }
+                                                    )}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <MapPin className="w-4 h-4 text-primary" />
+
+                                                <span>
+                                                    {
+                                                        event.location
+                                                    }
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+                    )}
+                </div>
+
+
+            </section >
+        )
+    }
+
+    const anyCampusEvents = filteredCampusSection.todayEvents.length > 0 ||
+        filteredCampusSection.thisWeekEvents.length > 0 ||
+        filteredCampusSection.laterEvents.length > 0
+
+    const anyClubEvents = clubEvents.todayEvents.length > 0 ||
+        clubEvents.thisWeekEvents.length > 0 ||
+        clubEvents.laterEvents.length > 0
+
+
+    const renderCampusSection = (
+        title: string,
+        events: CampusEvent[]
+    ) => {
+        if (
+            events.length ===
+            0
+        )
+            return null;
+
+
+        return (
+            <section className="mb-8">
+                <h2 className="mb-3 text-muted-foreground">
+                    {title}
+                </h2>
+
+                <div className="space-y-4">
+                    {events.map(
+                        (
+                            event
+                        ) => {
+
                             const buttonClass = isRsvped(event.id)
                                 ? "bg-muted text-foreground border border-border"
-                                : event.rsvpDeadline && currentDate > event.rsvpDeadline
+                                : event.rsvpDeadline && isExpired(event.rsvpDeadline)
                                     ? "bg-muted text-muted-foreground cursor-not-allowed"
                                     : "bg-primary text-primary-foreground";
 
@@ -246,30 +425,17 @@ export default function EventsPage() {
                                             }
                                         </h3>
 
-                                        {event.type ===
-                                            "club" &&
-                                            club && (
-                                                <Link
-                                                    href={`/clubs/${club.id}`}
-                                                    className="text-sm text-primary mb-2 inline-block"
-                                                >
-                                                    {
-                                                        club.name
-                                                    }
-                                                </Link>
-                                            )}
 
-                                        {event.type ===
-                                            "campus" &&
-                                            event.organizer && (
-                                                <p className="text-sm text-muted-foreground mb-2">
-                                                    Organized
-                                                    by{" "}
-                                                    {
-                                                        event.organizer
-                                                    }
-                                                </p>
-                                            )}
+
+                                        {event.organizer && (
+                                            <p className="text-sm text-muted-foreground mb-2">
+                                                Organized
+                                                by{" "}
+                                                {
+                                                    event.organizer
+                                                }
+                                            </p>
+                                        )}
 
                                         <p className="text-sm text-muted-foreground mb-4">
                                             {
@@ -334,49 +500,44 @@ export default function EventsPage() {
                                         </div>
 
 
-                                        {event.type ===
-                                            "campus" && (
-                                                <div className="mt-4">
-                                                    <button
-                                                        disabled={
-                                                            event.rsvpDeadline
-                                                                ? currentDate >
-                                                                event.rsvpDeadline
-                                                                : false
+
+                                        <div className="mt-4">
+                                            <button
+                                                disabled={
+                                                    isExpired(event.rsvpDeadline)
+                                                }
+                                                onClick={() => handleRsvpClick(event.id)}
+
+                                                className={`w-full py-3 rounded-xl transition-colors ${buttonClass}`}
+                                            >
+                                                {isRsvped(event.id) ? "Cancel RSVP" :
+                                                    event.rsvpDeadline &&
+                                                        isExpired(event.rsvpDeadline)
+                                                        ? "Unable to RSVP"
+                                                        : "RSVP to Event"}
+                                            </button>
+
+                                            {event.rsvpDeadline && (
+                                                <p className="text-xs text-muted-foreground text-center mt-2">
+                                                    RSVP by{" "}
+                                                    {event.rsvpDeadline.toLocaleString(
+                                                        "en-US",
+                                                        {
+                                                            month:
+                                                                "short",
+                                                            day:
+                                                                "numeric",
+                                                            year: "numeric",
+                                                            hour:
+                                                                "numeric",
+                                                            minute:
+                                                                "2-digit",
                                                         }
-                                                        onClick={() => handleRsvpClick(event.id)}
-
-                                                        className={`w-full py-3 rounded-xl transition-colors ${buttonClass}`}
-                                                    >
-                                                        {isRsvped(event.id) ? "Cancel RSVP" :
-                                                            event.rsvpDeadline &&
-                                                                currentDate >
-                                                                event.rsvpDeadline
-                                                                ? "Unable to RSVP"
-                                                                : "RSVP to Event"}
-                                                    </button>
-
-                                                    {event.rsvpDeadline && (
-                                                        <p className="text-xs text-muted-foreground text-center mt-2">
-                                                            RSVP by{" "}
-                                                            {event.rsvpDeadline.toLocaleString(
-                                                                "en-US",
-                                                                {
-                                                                    month:
-                                                                        "short",
-                                                                    day:
-                                                                        "numeric",
-                                                                    year: "numeric",
-                                                                    hour:
-                                                                        "numeric",
-                                                                    minute:
-                                                                        "2-digit",
-                                                                }
-                                                            )}
-                                                        </p>
                                                     )}
-                                                </div>
+                                                </p>
                                             )}
+                                        </div>
+
                                     </div>
                                 </div>
                             );
@@ -431,9 +592,8 @@ export default function EventsPage() {
                     )
                 }
             </section >
-        );
-    };
-
+        )
+    }
 
     return (
         <div className="pb-24">
@@ -478,13 +638,7 @@ export default function EventsPage() {
             </div>
 
             <div className="px-4 mt-4">
-                {activeTab ===
-                    "club" && (
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Events from clubs
-                            you follow
-                        </p>
-                    )}
+
                 {activeTab === "campus" && (
                     <div className="mb-4 space-y-3">
                         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
@@ -516,34 +670,82 @@ export default function EventsPage() {
                                 Not RSVPed
                             </button>
                         </div>
-                        <button
-                            onClick={() => setHideExpiredRsvp(!hideExpiredRsvp)}
-                            className="text-sm text-primary"
-                        >
-                            {hideExpiredRsvp
-                                ? "Show events with expired RSVP deadlines"
-                                : "Hide events with expired RSVP deadlines"}
-                        </button>
                     </div>
                 )}
 
-                <div className="px-4 mt-4">
-                    {renderSection(
-                        "Today",
-                        todayEvents
+                {activeTab === "campus" && anyCampusEvents &&
+                    (
+                        <>
+                            <button
+                                onClick={() => setHideExpiredRsvp(!hideExpiredRsvp)}
+                                className="text-sm text-primary"
+                            >
+                                {hideExpiredRsvp
+                                    ? "Show events with expired RSVP deadlines"
+                                    : "Hide events with expired RSVP deadlines"}
+                            </button>
+
+                            <div className="px-4 mt-4">
+                                {renderCampusSection(
+                                    "Today",
+                                    filteredCampusSection.todayEvents
+                                )}
+
+
+                                {renderCampusSection(
+                                    "This Week",
+                                    filteredCampusSection.thisWeekEvents
+                                )}
+
+                                {renderCampusSection(
+                                    "Later",
+                                    filteredCampusSection.laterEvents
+                                )}
+                            </div>
+                        </>
                     )}
 
-                    {renderSection(
-                        "This Week",
-                        thisWeekEvents
-                    )}
+                {activeTab == "campus" && !anyCampusEvents && ((<p className="text-sm text-muted-foreground mb-4">
+                    There are no upcoming events on campus currently  Wait for more!.</p>))}
 
-                    {renderSection(
-                        "Later",
-                        laterEvents
-                    )}
-                </div>
+                {activeTab === "club" && anyClubEvents && (
+                    <>
+                        <p className="text-sm text-muted-foreground mb-4">
+                            Events from clubs
+                            you follow
+                        </p>
+
+                        <div className="px-4 mt-4">
+                            {renderClubSection(
+                                "Today",
+                                clubEvents.todayEvents
+                            )}
+
+
+
+                            {renderClubSection(
+                                "This Week",
+                                clubEvents.thisWeekEvents
+                            )}
+
+                            {renderClubSection(
+                                "Later",
+                                clubEvents.laterEvents
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {activeTab == "club" && !anyClubEvents && ((<p className="text-sm text-muted-foreground mb-4">
+                    There are currently no upcoming events for the clubs that you follow.</p>))}
+
+
+
+
             </div>
         </div>
     );
-}
+
+};
+
+

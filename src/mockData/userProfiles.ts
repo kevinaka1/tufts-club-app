@@ -1,16 +1,5 @@
-export type UserProfile = {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    graduationYear: number;
-    followedClubs: string[]; // club ids
-    rsvpdEvents: string[]; // campus event ids only
-    likedCategories: string[];
-    interestedFormingClubs?: string[]; // forming club ids
-};
-
-export const mockUsers: UserProfile[] = [
+import { UserProfileType } from "@/types/userProfile";
+export const mockUsers: UserProfileType[] = [
     {
         id: "u1",
         firstName: "Jordan",
@@ -20,9 +9,9 @@ export const mockUsers: UserProfile[] = [
         followedClubs: ["1", "4", "5"],
         rsvpdEvents: ["e8"],
         likedCategories: [
-            "Engineering",
-            "Academic",
-            "Professional",
+            "c4", // Engineering
+            "c1", // Academic
+            "c5", // Professional
         ],
         interestedFormingClubs: ["f1", "f3"], // Quantum + Esports
     },
@@ -36,9 +25,9 @@ export const mockUsers: UserProfile[] = [
         followedClubs: ["2", "3"],
         rsvpdEvents: ["e9"],
         likedCategories: [
-            "Academic",
-            "Arts",
-            "Cultural",
+            "c1", // Academic
+            "c2", // Arts
+            "c3", // Cultural
         ],
         interestedFormingClubs: ["f2", "f6"], // Fashion + Film
     },
@@ -52,9 +41,9 @@ export const mockUsers: UserProfile[] = [
         followedClubs: ["1", "4", "6"],
         rsvpdEvents: ["e8", "e10"],
         likedCategories: [
-            "Engineering",
-            "Academic",
-            "Gaming",
+            "c4", // Engineering
+            "c1", // Academic
+            "c9", // Gaming
         ],
         interestedFormingClubs: ["f1", "f3"], // Quantum + Esports
     },
@@ -68,9 +57,9 @@ export const mockUsers: UserProfile[] = [
         followedClubs: ["3", "5"],
         rsvpdEvents: ["e10"],
         likedCategories: [
-            "Arts",
-            "Professional",
-            "Wellness",
+            "c2", // Arts
+            "c5", // Professional
+            "c10", // Wellness
         ],
         interestedFormingClubs: ["f4", "f6"], // Mental Health + Film
     },
@@ -84,9 +73,9 @@ export const mockUsers: UserProfile[] = [
         followedClubs: ["2", "5", "6"],
         rsvpdEvents: ["e8", "e9"],
         likedCategories: [
-            "Professional",
-            "Recreation",
-            "Sports",
+            "c5", // Professional
+            "c6", // Recreation
+            "c7", // Sports
         ],
         interestedFormingClubs: [], // none
     },
@@ -100,9 +89,9 @@ export const mockUsers: UserProfile[] = [
         followedClubs: ["1", "2", "4"],
         rsvpdEvents: [],
         likedCategories: [
-            "Academic",
-            "Engineering",
-            "Environmental",
+            "c1", // Academic
+            "c4", // Engineering
+            "c8", // Environmental
         ],
         interestedFormingClubs: ["f5", "f1"], // Gardening + Quantum
     },
