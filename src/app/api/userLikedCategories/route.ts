@@ -1,5 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
 import { postUserLikedCategory } from "../../../apis/postUserLikedCategory";
 import { deleteUserLikedCategory } from "../../../apis/deleteUserLikedCategory";
 

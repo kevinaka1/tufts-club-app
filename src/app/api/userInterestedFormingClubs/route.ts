@@ -1,5 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
 import { postUserInterestedFormingClub } from "../../../apis/postUserInterestedFormingClub";
 import { deleteUserInterestedFormingClub } from "../../../apis/deleteUserInterestedFormingClub";
 
