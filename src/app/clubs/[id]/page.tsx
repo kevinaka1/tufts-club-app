@@ -3,7 +3,6 @@ import { getClub } from "@/apis/getClub";
 import { getClubEvents } from "@/apis/getClubEvents";
 import { getSimilarClubs } from "@/apis/getSimilarClubs";
 import { getUserFollowedClubs } from "@/apis/getUserFollowedClubs";
-import { ClubDetailsEvent, ClubDetailsResponseClub, ClubDetailsSimilarClub } from "@/types/apiResponses";
 
 export default async function Page({
     params,

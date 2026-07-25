@@ -5,7 +5,7 @@ import {
     Calendar,
     Heart,
 } from "lucide-react";
-import { CampusEvent, ExploreCampusEvent, ExploreClub } from "@/types/apiResponses";
+import { CampusEvent, ExploreClub } from "@/types/apiResponses";
 import { CategoryType } from "@/types/category";
 
 

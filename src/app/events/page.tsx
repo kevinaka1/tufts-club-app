@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import EventsPage from "./EventsPage";
-import { getEventsApiResponse } from "@/mockApis/events";
 import { getRSVPdEventIds } from "@/apis/getRSVPdEventIds";
 import { getUserClubsEvents } from "@/apis/getUserClubsEvents";
 import { getUpcomingCampusEvents } from "@/apis/getUpcomingCampusEvents";

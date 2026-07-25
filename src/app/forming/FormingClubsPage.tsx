@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ArrowLeft, Sparkles, Users, X } from "lucide-react";
-import { formingClubsApiResponse } from "@/mockApis/formingClubs";
+import { Sparkles, Users, X } from "lucide-react";
 import { FormingClubResponse } from "@/types/apiResponses";
 import { useRouter } from "next/navigation";
 

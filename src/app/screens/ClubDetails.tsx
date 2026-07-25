@@ -15,9 +15,6 @@ import {
 } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
 import { CategoryType } from "@/types/category";
-import { getSimilarClubs } from "@/apis/getSimilarClubs";
-import { getClub } from "@/apis/getClub";
-import { getClubEvents } from "@/apis/getClubEvents";
 import { ClubDetailsEvent, ClubDetailsResponseClub, ClubDetailsSimilarClub } from "@/types/apiResponses";
 
 

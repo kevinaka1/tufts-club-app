@@ -2,9 +2,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search, Grid3x3, List as ListIcon, Users, Filter, Heart } from "lucide-react";
-import { getAllClubs } from "@/apis/getAllClubs";
-import { getUserLikedCategories } from "@/apis/getUserLikedCategories";
-import { getAllCategories } from "@/apis/getAllCategories";
 import { ClubsDirectoryClub } from "@/types/apiResponses";
 import { CategoryType } from "@/types/category";
 

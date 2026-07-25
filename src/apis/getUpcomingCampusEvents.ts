@@ -1,8 +1,6 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
-import { CampusEvent, ExploreCampusEvent } from "@/types/apiResponses";
+import { CampusEvent } from "@/types/apiResponses";
 
 
 const supabase = createClient<Database>(

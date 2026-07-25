@@ -1,8 +1,6 @@
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
 import { createClient } from "@supabase/supabase-js";
-import { ExploreClub } from "@/types/apiResponses";
 import type { Database } from "@/types/supabase";
+import { ExploreClub } from "@/types/apiResponses";
 
 const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

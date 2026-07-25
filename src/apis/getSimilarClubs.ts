@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { CategoryResponse } from "@/types/apiResponses";
 import type { Database } from "@/types/supabase";
 
 
