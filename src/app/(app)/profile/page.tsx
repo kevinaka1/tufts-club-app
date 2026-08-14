@@ -3,18 +3,21 @@ import Profile from "./ProfilePage";
 import { getUserProfile } from "@/apis/getUserProfile";
 import { getUserLikedCategories } from "@/apis/getUserLikedCategories";
 import { getUserFollowedClubs } from "@/apis/getUserFollowedClubs";
+import { createClient } from "@/lib/supabase-server";
 
 export default async function Page() {
+    const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    const userId = user!.id
 
-    const userId = "2e8c0d17-2058-49d0-bce8-d9559fe3b744";
-    const user = await getUserProfile(userId);
+    const userProfile = await getUserProfile(userId);
     const userLikedCategories = await getUserLikedCategories(userId);
     const userFollowedClubs = await getUserFollowedClubs(userId)
 
 
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <Profile user={user}
+            <Profile user={userProfile}
                 userLikedCategories={userLikedCategories}
                 userFollowedClubs={userFollowedClubs} />
         </Suspense>

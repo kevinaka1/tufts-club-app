@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "@/lib/supabase-browser-client";
 import Link from "next/link";
 import {
     User,
@@ -8,10 +9,12 @@ import {
     Users,
     Heart,
     Tag,
-    X
+    X,
+    LogOut
 } from "lucide-react";
 import { CategoryType } from "@/types/category";
 import { CategoryResponse, FollowedClubResponse, UserProfileResponse } from "@/types/apiResponses";
+import { useRouter } from "next/navigation";
 
 export default function Profile({
     user,
@@ -24,7 +27,7 @@ export default function Profile({
     userFollowedClubs: FollowedClubResponse[]
 }) {
 
-
+    const router = useRouter();
     const [likedCategories, setLikedCategories] =
         useState(new Map(userLikedCategories.map(c => [c.id, c])))
         ;
@@ -45,7 +48,6 @@ export default function Profile({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    userId: user?.id,
                     categoryId: category.id
                 }),
             });
@@ -78,7 +80,6 @@ export default function Profile({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    userId: user?.id,
                     clubId: initClub.id
                 }),
             });
@@ -97,6 +98,17 @@ export default function Profile({
         }
 
     };
+
+    const logOut = async () => {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            console.error("Failed to log out:", error);
+            return;
+        }
+
+        router.push("/login");
+    }
 
 
     return (
@@ -276,6 +288,14 @@ export default function Profile({
                             </button>
                         </div>
                     ))}
+                </div>
+                <div className="mt-8 space-y-3">
+                    <button
+                        onClick={logOut}
+                        className="w-full py-3 bg-destructive/10 text-destructive rounded-xl flex items-center justify-center gap-2 hover:bg-destructive/20 active:scale-[0.98] transition">
+                        <LogOut className="w-5 h-5" />
+                        Log Out
+                    </button>
                 </div>
             </div>
         </div>

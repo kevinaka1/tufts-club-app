@@ -7,12 +7,10 @@ import { CategoryType } from "@/types/category";
 
 
 export function ClubsDirectory({
-    userId,
     allClubs,
     usersLikedCategories,
     categories
 }: {
-    userId: string,
     allClubs: ClubsDirectoryClub[] | undefined,
     usersLikedCategories: CategoryType[],
     categories: CategoryType[] | undefined
@@ -58,7 +56,6 @@ export function ClubsDirectory({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId,
                         categoryId: categoryId,
                     }),
                 });
@@ -69,7 +66,6 @@ export function ClubsDirectory({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId,
                         categoryId: categoryId,
                     }),
                 });

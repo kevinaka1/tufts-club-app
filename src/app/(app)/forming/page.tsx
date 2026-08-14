@@ -2,11 +2,14 @@ import { Suspense } from "react";
 import ClubsInFormation from "./FormingClubsPage";
 import { getAllFormingClubs } from "@/apis/getAllFormingClubs";
 import { getUserInterestedFormingClubIds } from "@/apis/getUserInterestedFormingClubsIds";
+import { createClient } from "@/lib/supabase-server";
 
 export default async function Page() {
 
 
-    const userId = "2e8c0d17-2058-49d0-bce8-d9559fe3b744";
+    const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    const userId = user!.id
 
     const formingClubs = await getAllFormingClubs();
     const initialInterestedClubIds = await getUserInterestedFormingClubIds(userId);
@@ -16,7 +19,7 @@ export default async function Page() {
 
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <ClubsInFormation userId={userId} formingClubs={formingClubs} initialInterestedClubIds={initialInterestedClubIds} />
+            <ClubsInFormation formingClubs={formingClubs} initialInterestedClubIds={initialInterestedClubIds} />
         </Suspense>
     );
 }

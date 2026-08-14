@@ -1,11 +1,26 @@
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase-server";
 import { postUserFollowedClub } from "../../../apis/postUserFollowedClub";
 import { deleteUserFollowedClub } from "../../../apis/deleteUserFollowedClub";
 
+const supabase = await createClient();
 
 export async function POST(req: Request) {
-    const { userId, clubId } = await req.json();
+    const {
+        data: { user },
+        error: authError,
+    } = await supabase.auth.getUser();
 
-    const { error } = await postUserFollowedClub(userId, clubId);
+    if (authError || !user) {
+        return NextResponse.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+        );
+    }
+
+    const { clubId } = await req.json();
+
+    const { error } = await postUserFollowedClub(user.id, clubId);
 
     if (error) {
         return Response.json(error, { status: 500 });
@@ -16,9 +31,21 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-    const { userId, clubId } = await req.json();
+    const {
+        data: { user },
+        error: authError,
+    } = await supabase.auth.getUser();
 
-    const { error } = await deleteUserFollowedClub(userId, clubId);
+    if (authError || !user) {
+        return NextResponse.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+        );
+    }
+
+    const { clubId } = await req.json();
+
+    const { error } = await deleteUserFollowedClub(user.id, clubId);
 
     if (error) {
         return Response.json(error, { status: 500 });

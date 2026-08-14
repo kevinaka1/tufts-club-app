@@ -7,12 +7,10 @@ import { useRouter } from "next/navigation";
 
 
 export default function ClubsInFormation({
-    userId,
     formingClubs,
     initialInterestedClubIds,
 
 }: {
-    userId: string,
     formingClubs: FormingClubResponse[],
     initialInterestedClubIds: string[] | undefined
 }) {
@@ -67,7 +65,6 @@ export default function ClubsInFormation({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId,
                         formingClubId: selectedClubId,
                     }),
                 });
@@ -78,7 +75,6 @@ export default function ClubsInFormation({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId,
                         formingClubId: selectedClubId,
                     }),
                 });

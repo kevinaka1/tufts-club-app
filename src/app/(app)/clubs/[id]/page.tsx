@@ -1,8 +1,9 @@
-import { ClubDetails } from "../../screens/ClubDetails";
+import { ClubDetails } from "./ClubDetails";
 import { getClub } from "@/apis/getClub";
 import { getClubEvents } from "@/apis/getClubEvents";
 import { getSimilarClubs } from "@/apis/getSimilarClubs";
 import { getUserFollowedClubs } from "@/apis/getUserFollowedClubs";
+import { createClient } from "@/lib/supabase-server";
 
 export default async function Page({
     params,
@@ -10,7 +11,10 @@ export default async function Page({
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const userId = "2e8c0d17-2058-49d0-bce8-d9559fe3b744";
+    const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    const userId = user!.id
+
     const userFollowedClubs = await getUserFollowedClubs(userId)
     const followedClubIds = new Set(
         userFollowedClubs.map(club => club.id)
@@ -21,6 +25,6 @@ export default async function Page({
     const similarClubs = await getSimilarClubs(id)
 
 
-    return <ClubDetails userId={userId} club={club} alreadyJoinedClub={alreadyJoined} upcomingEvents={upcomingEvents}
+    return <ClubDetails club={club} alreadyJoinedClub={alreadyJoined} upcomingEvents={upcomingEvents}
         similarClubs={similarClubs} />;
 }

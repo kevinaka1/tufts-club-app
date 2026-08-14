@@ -15,12 +15,10 @@ import { CampusEvent, CampusEventSections, ClubEventSections } from "@/types/api
 import { ClubEvent } from "@/types/apiResponses";
 
 export default function EventsPage({
-    userId,
     initialRSVPdEventIds,
     clubEvents,
     campusEvents
 }: {
-    userId: string,
     initialRSVPdEventIds: string[] | undefined,
     clubEvents: ClubEventSections,
     campusEvents: CampusEventSections
@@ -167,7 +165,6 @@ export default function EventsPage({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId,
                         eventId: selectedEventId,
                     }),
                 });
@@ -178,7 +175,6 @@ export default function EventsPage({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId,
                         eventId: selectedEventId,
                     }),
                 });

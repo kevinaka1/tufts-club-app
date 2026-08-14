@@ -4,11 +4,14 @@ import { getNewClubs } from "@/apis/getNewClubs";
 import { getPopularClubs } from "@/apis/getPopularClubs";
 import { getUpcomingCampusEvents } from "@/apis/getUpcomingCampusEvents";
 import { getRecommendedClubs } from "@/apis/getRecommendedClubs";
+import { createClient } from "@/lib/supabase-server";
 
 
 export default async function ExplorePage() {
 
-    const userId = "2e8c0d17-2058-49d0-bce8-d9559fe3b744";
+    const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    const userId = user!.id
     const newClubs = await getNewClubs();
     const popularClubs = await getPopularClubs();
     const exploreEvents = await getUpcomingCampusEvents();
@@ -26,3 +29,7 @@ export default async function ExplorePage() {
         recommendedClubs={recommendedClubs}
     />;
 }
+
+// export default async function ExplorePage() {
+//     return <div>Hello</div>;
+// }

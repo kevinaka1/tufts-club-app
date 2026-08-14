@@ -19,13 +19,11 @@ import { ClubDetailsEvent, ClubDetailsResponseClub, ClubDetailsSimilarClub } fro
 
 
 export function ClubDetails({
-    userId,
     club,
     alreadyJoinedClub,
     upcomingEvents,
     similarClubs
 }: {
-    userId: string,
     club: ClubDetailsResponseClub | undefined,
     alreadyJoinedClub: boolean
     upcomingEvents: ClubDetailsEvent[] | undefined,
@@ -53,7 +51,6 @@ export function ClubDetails({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId,
                         clubId: club.id,
                     }),
                 });
@@ -64,7 +61,6 @@ export function ClubDetails({
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        userId,
                         clubId: club.id,
                     }),
                 });

@@ -4,11 +4,15 @@ import { getRSVPdEventIds } from "@/apis/getRSVPdEventIds";
 import { getUserClubsEvents } from "@/apis/getUserClubsEvents";
 import { getUpcomingCampusEvents } from "@/apis/getUpcomingCampusEvents";
 import { buildSections } from "@/utils/buildSections";
+import { createClient } from "@/lib/supabase-server";
 
 export default async function Page() {
 
 
-    const userId = "2e8c0d17-2058-49d0-bce8-d9559fe3b744"
+    const supabase = await createClient();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    const userId = user!.id
+
     const initialRSVPdEventIds = await getRSVPdEventIds(userId);
     console.log(`Inital RSVPd Event Ids ${initialRSVPdEventIds} `)
     const clubEvents = await getUserClubsEvents(userId);
@@ -21,7 +25,7 @@ export default async function Page() {
 
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <EventsPage userId={userId} initialRSVPdEventIds={initialRSVPdEventIds}
+            <EventsPage initialRSVPdEventIds={initialRSVPdEventIds}
                 clubEvents={clubEventsSections} campusEvents={campusEventsSections} />
         </Suspense>
     );
