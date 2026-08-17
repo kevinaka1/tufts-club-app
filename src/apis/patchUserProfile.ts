@@ -6,8 +6,6 @@ export async function patchUserProfile(
 ) {
 
     const supabase = await createClient();
-    console.log(`Grad year ${graduationYear}`)
-    console.log(`user id ${userId}`)
     const { data, error } = await supabase
         .from("users")
         .update({
