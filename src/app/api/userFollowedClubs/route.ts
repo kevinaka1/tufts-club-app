@@ -3,9 +3,9 @@ import { createClient } from "@/lib/supabase-server";
 import { postUserFollowedClub } from "../../../apis/postUserFollowedClub";
 import { deleteUserFollowedClub } from "../../../apis/deleteUserFollowedClub";
 
-const supabase = await createClient();
 
 export async function POST(req: Request) {
+    const supabase = await createClient();
     const {
         data: { user },
         error: authError,
@@ -31,6 +31,7 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+    const supabase = await createClient();
     const {
         data: { user },
         error: authError,

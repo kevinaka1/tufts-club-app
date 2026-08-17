@@ -3,10 +3,11 @@ import { createClient } from "@/lib/supabase-server";
 import { postRSVPToEvent } from "../../../apis/postRSVPToEvent";
 import { deleteRSVPToEvent } from "../../../apis/deleteRSVPToEvent";
 
-const supabase = await createClient();
+
 
 
 export async function POST(req: Request) {
+    const supabase = await createClient();
 
     const {
         data: { user },
@@ -33,6 +34,7 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+    const supabase = await createClient();
     const {
         data: { user },
         error: authError,
