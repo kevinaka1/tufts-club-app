@@ -1,12 +1,12 @@
 # Tufts Club App 
 
-A centralized platform for Tufts University students who want to find clubs and campus activities that interest them. The app makes it easier for students to discover organizations they may not otherwise encounter, find clubs that are still forming, and stay aware of upcoming campus events.
+A centralized platform for Tufts University students who want to find clubs and campus activities that interest them. The app makes it easier for students to discover organizations they may not otherwise encounter, help promote clubs that are new or still forming, and stay aware of upcoming campus events.
 
 [View the live application](https://tufts-club-app.vercel.app/)
 
 * **Usage/Features**
   - Discover established Tufts clubs based on interests.
-  - Discover clubs in formation and opportunities to become founding members.
+  - Discover new clubs and clubs in the forming phase looking for more student support. 
   - Receive personalized club recommendations.
   - Discover upcoming campus events.
 
